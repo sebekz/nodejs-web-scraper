@@ -1,9 +1,10 @@
 {
-  "name": "nodejs-web-scraper",
-  "version": "6.1.0",
+  "name": "@sebekz/nodejs-web-scraper",
+  "version": "6.2.0",
   "description": "A web scraper for NodeJs",
   "main": "index.js",
   "scripts": {
+    "build": "gulp build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -29,10 +30,10 @@
   },
   "homepage": "https://nodejs-web-scraper.ibrod83.com/",
   "bugs": {
-    "url": "https://github.com/ibrod83/nodejs-web-scraper/issues"
+    "url": "https://github.com/sebekz/nodejs-web-scraper/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ibrod83/nodejs-web-scraper.git"
+    "url": "https://github.com/sebekz/nodejs-web-scraper.git"
   }
 }

@@ -27,7 +27,7 @@ class CollectLinks extends HttpOperation {
    *
    * @param {string} querySelector cheerio-advanced-selectors selector
    * @param {Object} [config]
-   * @param {string} [config.name = 'Default OpenLinks name']
+   * @param {string} [config.name = 'Default CollectLinks name']
    * @param {Object} [config.pagination = null] Look at the pagination API for more details.
    * @param {number[]} [config.slice = null]
    * @param {Function} [config.condition = null] Receives a Cheerio node.  Use this hook to decide if this node should be included in the scraping. Return true or false
@@ -72,7 +72,7 @@ class CollectLinks extends HttpOperation {
   validateOperationArguments() {
     if (!this.querySelector || typeof this.querySelector !== "string")
       throw new Error(
-        `OpenLinks operation must be provided with a querySelector.`
+        `CollectLinks operation must be provided with a querySelector.`
       );
   }
 
@@ -86,11 +86,12 @@ class CollectLinks extends HttpOperation {
     // debugger;
     const refs = await this.createLinkList(html, url);
 
-    const hasOpenLinksOperation =
-      this.operations.filter((child) => child.constructor.name === "OpenLinks")
-        .length > 0; //Checks if the current page operation has any other page operations in it. If so, will force concurrency limitation.
+    const hasCollectLinksOperation =
+      this.operations.filter(
+        (child) => child.constructor.name === "CollectLinks"
+      ).length > 0; //Checks if the current page operation has any other page operations in it. If so, will force concurrency limitation.
     let forceConcurrencyLimit = false;
-    if (hasOpenLinksOperation) {
+    if (hasCollectLinksOperation) {
       forceConcurrencyLimit = 3;
     }
     // debugger;
@@ -151,7 +152,7 @@ class CollectLinks extends HttpOperation {
   }
 }
 
-Object.assign(OpenLinks.prototype, CompositeInjectMixin);
-Object.assign(OpenLinks.prototype, CompositeScrapeMixin);
+// Object.assign(CollectLinks.prototype, CompositeInjectMixin);
+// Object.assign(CollectLinks.prototype, CompositeScrapeMixin);
 
 module.exports = CollectLinks;
