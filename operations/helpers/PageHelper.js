@@ -24,15 +24,12 @@ class PageHelper {
    * @param {boolean} shouldPaginate
    * @return {Promise<{data:[],address:string}>}
    */
-  async processOneIteration(
-    href,
-    shouldPaginate,
-    shouldScrapeChildren = false
-  ) {
+  async processOneIteration(href, shouldPaginate) {
     //Will process one scraping object, including a pagination object. Used by Root and OpenLinks.
     // debugger;
     if (shouldPaginate) {
-      //If the scraping object is actually a pagination one, a different function is called.
+      // If the scraping object is actually a pagination one, a different function is called.
+      // console.log("processOneIteration: paginate()");
       return this.paginate(href);
     }
 
@@ -47,11 +44,10 @@ class PageHelper {
       await this.runAfterResponseHooks(response);
 
       // debugger;
-      if (shouldScrapeChildren)
-        var dataFromChildren = await this.Operation.scrapeChildren(
-          this.Operation.operations,
-          { html: response.data, url: response.url }
-        );
+      var dataFromChildren = await this.Operation.scrapeChildren(
+        this.Operation.operations,
+        { html: response.data, url: response.url }
+      );
 
       await this.runGetPageObjectHook(href, dataFromChildren);
 
@@ -77,24 +73,26 @@ class PageHelper {
   async paginate(address) {
     //Divides a given page to multiple pages.
     const paginationConfig = this.Operation.config.pagination;
-    const paginationUrls = getPaginationUrls(address, paginationConfig);
+    if (paginationConfig) {
+      const paginationUrls = getPaginationUrls(address, paginationConfig);
 
-    const dataFromChildren = [];
+      const dataFromChildren = [];
 
-    await mapPromisesWithLimitation(
-      paginationUrls,
-      async (url) => {
-        const data = await this.processOneIteration(url, false);
+      await mapPromisesWithLimitation(
+        paginationUrls,
+        async (url) => {
+          const data = await this.processOneIteration(url, false);
 
-        dataFromChildren.push(data);
-      },
-      3
-    ); //The argument 3 forces lower promise limitation on pagination.
-    // return dataFromChildren;
-    return {
-      address: address,
-      data: dataFromChildren,
-    };
+          dataFromChildren.push(data);
+        },
+        3
+      ); //The argument 3 forces lower promise limitation on pagination.
+      // return dataFromChildren;
+      return {
+        address: address,
+        data: dataFromChildren,
+      };
+    }
   }
 
   /**

@@ -48,6 +48,8 @@ class CollectLinks extends HttpOperation {
     // this.compositeHelper = new CompositeHelper(this);
     // this.virtualOperations = []
     this.querySelector = querySelector;
+    this.operations = [];
+    this.noResultsPageHtml = config.noResultsPageHtml;
 
     if (
       typeof config === "object" &&
@@ -82,9 +84,19 @@ class CollectLinks extends HttpOperation {
    * @return {Promise<{type:string,name:string,data:[]}>}
    */
   async scrape({ url, html }) {
+    if (this.noResultsPageHtml && html.search(this.noResultsPageHtml) > 0) {
+      console.log("No more pages found. End of the line!");
+      return;
+    }
     if (!this.pageHelper) this.initPageHelper();
     // debugger;
     const refs = await this.createLinkList(html, url);
+    console.log("refs", url, refs);
+
+    if (!refs.length) {
+      console.long("No more links found");
+      return;
+    }
 
     const hasCollectLinksOperation =
       this.operations.filter(
@@ -104,9 +116,10 @@ class CollectLinks extends HttpOperation {
         // debugger;
         const data = await this.pageHelper.processOneIteration(
           this.transformHref(href),
-          shouldPaginate,
-          false // ! Do not scrape children
+          true // force next page
         );
+
+        // if (this.config.getPageData) await this.config.getPageData(data);
 
         iterations.push(data);
       },
